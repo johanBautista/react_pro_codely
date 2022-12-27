@@ -4,6 +4,7 @@ export interface DevDashConfig {
 		id: string;
 		repository_url: string;
 	}[];
+	//aqui manda un array vacio para no tener que usar el optional chainning y que salte el error cuando venga un undefined o null
 }
 
 export const config: DevDashConfig = {
