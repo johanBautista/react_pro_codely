@@ -1,4 +1,8 @@
-import { InMemoryGitHubRepositoryReopsitory } from "../../infraestructure/InMemoryGitHubRepositoryRepository";
+import { useEffect, useState } from "react";
+
+import { config } from "../../devdash_config";
+import { GitHubApiGitHubRepositoryRepository } from "../../infraestructure/GitHubApiGitHubRepositoryRepository";
+import { GitHubApiResponses } from "../../infraestructure/GitHubApiResponse";
 import { isoToReadableDate } from "../../utils/isoToReadableDate";
 import styles from "./Dashboard.module.scss";
 import { ReactComponent as Brand } from "./icons/brand.svg";
@@ -12,11 +16,20 @@ import { ReactComponent as Start } from "./icons/star.svg";
 import { ReactComponent as Unlock } from "./icons/unlock.svg";
 import { ReactComponent as Watchers } from "./icons/watchers.svg";
 
-const repository = new InMemoryGitHubRepositoryReopsitory();
-const repositories = repository.search();
+const repository = new GitHubApiGitHubRepositoryRepository(config.github_access_token);
 
 export const Dashboard = () => {
 	const title = "DevDash_";
+
+	const [repositoryData, setRepositoryData] = useState<GitHubApiResponses[]>([]);
+	useEffect(() => {
+		repository
+			.search(config.widgets.map((widget) => widget.repository_url))
+			.then((responses) => {
+				setRepositoryData(responses);
+			})
+			.catch((error) => console.log(error));
+	}, []);
 
 	return (
 		<>
@@ -27,7 +40,7 @@ export const Dashboard = () => {
 				</section>
 			</header>
 			<section className={styles.container}>
-				{repositories.map((widget) => (
+				{repositoryData.map((widget) => (
 					<article className={styles.widget} key={widget.repositoryData.id}>
 						<header className={styles.widget__header}>
 							<a
@@ -44,9 +57,9 @@ export const Dashboard = () => {
 						<div className={styles.widget__body}>
 							<div className={styles.widget__status}>
 								<p>Last update {isoToReadableDate(widget.repositoryData.updated_at)}</p>
-								{widget.CiStatus.workflow_runs.length > 0 && (
+								{widget.ciStatus.workflow_runs.length > 0 && (
 									<div>
-										{widget.CiStatus.workflow_runs[0].status === "completed" ? (
+										{widget.ciStatus.workflow_runs[0].status === "completed" ? (
 											<Check />
 										) : (
 											<Error />
@@ -75,7 +88,7 @@ export const Dashboard = () => {
 							</div>
 							<div className={styles.widget__stat}>
 								<PullRequests />
-								<span>{widget.pullRequest.length}</span>
+								<span>{widget.pullRequests.length}</span>
 							</div>
 						</footer>
 					</article>
