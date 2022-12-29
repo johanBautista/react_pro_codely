@@ -1,4 +1,4 @@
-import { githubApiResponses } from "../../github_api_responses";
+import { InMemoryGitHubRepositoryReopsitory } from "../../infraestructure/InMemoryGitHubRepositoryRepository";
 import { isoToReadableDate } from "../../utils/isoToReadableDate";
 import styles from "./Dashboard.module.scss";
 import { ReactComponent as Brand } from "./icons/brand.svg";
@@ -12,6 +12,9 @@ import { ReactComponent as Start } from "./icons/star.svg";
 import { ReactComponent as Unlock } from "./icons/unlock.svg";
 import { ReactComponent as Watchers } from "./icons/watchers.svg";
 
+const repository = new InMemoryGitHubRepositoryReopsitory();
+const repositories = repository.search();
+
 export const Dashboard = () => {
 	const title = "DevDash_";
 
@@ -24,7 +27,7 @@ export const Dashboard = () => {
 				</section>
 			</header>
 			<section className={styles.container}>
-				{githubApiResponses.map((widget) => (
+				{repositories.map((widget) => (
 					<article className={styles.widget} key={widget.repositoryData.id}>
 						<header className={styles.widget__header}>
 							<a

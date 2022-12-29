@@ -4,6 +4,7 @@ export const isoToReadableDate = (lastUpdate: string): string => {
 	const diffTime = currentDate.getTime() - lastUpdateDate.getTime();
 	const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
 
+	//clausulas guarda
 	if (diffDays === 0) {
 		return "today";
 	}
